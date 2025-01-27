@@ -3,15 +3,23 @@ import pandas as pd
 import plotly.graph_objects as go
 from datetime import datetime, timedelta
 import requests
-from groq import Groq
+
+# Try importing Groq, handle if not available
+try:
+    from groq import Groq
+    GROQ_AVAILABLE = True
+except ImportError:
+    GROQ_AVAILABLE = False
+    st.error("Groq package is not installed. Please install it using: pip install groq")
 
 # API Keys
 POLYGON_API_KEY = "pDTt2mNMtPIvevWNFretS1dCHoTf2XQ2"
 NEWS_API_KEY = "5ef758ddb04a45cc99513854af12d93b"
 GROQ_API_KEY = "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"
 
-# Initialize Groq client
-groq_client = Groq(api_key=GROQ_API_KEY)
+# Initialize Groq client only if available
+if GROQ_AVAILABLE:
+    groq_client = Groq(api_key=GROQ_API_KEY)
 
 # Groq parameters
 model = "llama3-8b-8192"
@@ -64,6 +72,9 @@ def generate_stock_analysis_prompt(ticker, news_text):
     """
 
 def get_groq_analysis(ticker, news_text):
+    if not GROQ_AVAILABLE:
+        return "Groq analysis is not available. Please install the Groq package."
+    
     try:
         messages = [
             {"role": "system", "content": SYSTEM_MESSAGE},
