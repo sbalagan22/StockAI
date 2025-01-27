@@ -323,12 +323,12 @@ try:
             hovermode='x unified',
             xaxis=dict(
                 tickformat=date_format,
-                tickfont=dict(size=14, weight='bold', family='Segoe UI'),
-                title_font=dict(size=16, weight='bold', family='Segoe UI')
+                tickfont=dict(size=14, family='Segoe UI'),
+                title_font=dict(size=16, family='Segoe UI')
             ),
             yaxis=dict(
-                tickfont=dict(size=14, weight='bold', family='Segoe UI'),
-                title_font=dict(size=16, weight='bold', family='Segoe UI')
+                tickfont=dict(size=14, family='Segoe UI'),
+                title_font=dict(size=16, family='Segoe UI')
             ),
             font=dict(family='Segoe UI')
         )
