@@ -3,6 +3,11 @@ import pandas as pd
 import plotly.graph_objects as go
 from datetime import datetime, timedelta
 import requests
+import os
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
 
 # Try importing Groq, handle if not available
 try:
@@ -12,10 +17,15 @@ except ImportError:
     GROQ_AVAILABLE = False
     st.error("Groq package is not installed. Please install it using: pip install groq")
 
-# API Keys
-POLYGON_API_KEY = "pDTt2mNMtPIvevWNFretS1dCHoTf2XQ2"
-NEWS_API_KEY = "5ef758ddb04a45cc99513854af12d93b"
-GROQ_API_KEY = "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"
+# API Keys from environment variables
+POLYGON_API_KEY = os.environ.get("POLYGON_API_KEY")
+NEWS_API_KEY = os.environ.get("NEWS_API_KEY")
+GROQ_API_KEY = os.environ.get("GROQ_API_KEY")
+
+# Validate API keys
+if not all([POLYGON_API_KEY, NEWS_API_KEY, GROQ_API_KEY]):
+    st.error("Missing required API keys. Please set all required environment variables.")
+    st.stop()
 
 # Initialize Groq client only if available
 if GROQ_AVAILABLE:
