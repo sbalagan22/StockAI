@@ -123,10 +123,6 @@ def get_market_overview():
         response = requests.get(url)
         market_news = response.json()
         
-        # Add debug logging
-        print("NewsAPI Response:", market_news)  # For local debugging
-        st.write("Debug - NewsAPI Response:", market_news)  # For Streamlit visibility
-        
         if 'status' in market_news and market_news['status'] != 'ok':
             return f"NewsAPI Error: {market_news.get('message', 'Unknown error')}"
             
@@ -163,7 +159,6 @@ def get_market_overview():
         return chat_completion.choices[0].message.content
         
     except Exception as e:
-        st.error(f"Market Overview Error: {str(e)}")  # More visible error
         return f"Error generating market overview: {str(e)}"
 
 # Page config
