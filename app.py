@@ -66,6 +66,17 @@ Keep each section focused and use bullet points consistently.
 Avoid long paragraphs and maintain a clear, concise format.
 """
 
+# Add this new system message for market overview
+MARKET_OVERVIEW_SYSTEM_MESSAGE = """
+You are an expert financial market analyst. Your task is to provide a concise market overview based on the provided news.
+Focus on:
+• Major market indices performance and trends
+• Key sector movements
+• Market sentiment and volatility
+• Notable market events or catalysts
+Keep the response brief (2-3 sentences) and focus on the most important market-moving information.
+"""
+
 def generate_stock_analysis_prompt(ticker, news_text):
     return f"""
     Please analyze the following business news and insights for {ticker} and provide a comprehensive analysis covering:
@@ -104,7 +115,41 @@ def get_groq_analysis(ticker, news_text):
 
 # Update the market overview function
 def get_market_overview():
-    return """The market shows positive momentum with major indices trending upward. S&P 500 leads with a 1.2% gain, while Nasdaq follows at 1.7% and Dow edges up 0.3%. Technology and healthcare sectors outperform, while energy and utilities lag behind. Market sentiment remains bullish with low volatility (VIX: 14.2) and above-average trading volume."""
+    try:
+        # Get broad market news
+        market_news = get_stock_news("SPY")  # Using SPY as proxy for market news
+        
+        if not market_news.get('articles'):
+            return "Market overview currently unavailable."
+            
+        # Filter and format news
+        filtered_articles = filter_relevant_news(market_news['articles'])
+        market_news_text = "\n\n".join([
+            f"• {article['description']}"
+            for article in filtered_articles
+            if article['description']
+        ])
+        
+        # Generate market overview using Groq
+        if not GROQ_AVAILABLE:
+            return "Market overview analysis unavailable - Groq package not installed."
+            
+        messages = [
+            {"role": "system", "content": MARKET_OVERVIEW_SYSTEM_MESSAGE},
+            {"role": "user", "content": f"Based on these recent market news items, provide a brief market overview:\n\n{market_news_text}"}
+        ]
+        
+        chat_completion = groq_client.chat.completions.create(
+            messages=messages,
+            model=model,
+            temperature=0.3,
+            max_tokens=200,
+        )
+        
+        return chat_completion.choices[0].message.content
+        
+    except Exception as e:
+        return f"Error generating market overview: {str(e)}"
 
 # Page config
 st.set_page_config(
