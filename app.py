@@ -123,8 +123,15 @@ def get_market_overview():
         response = requests.get(url)
         market_news = response.json()
         
+        # Add debug logging
+        print("NewsAPI Response:", market_news)  # For local debugging
+        st.write("Debug - NewsAPI Response:", market_news)  # For Streamlit visibility
+        
+        if 'status' in market_news and market_news['status'] != 'ok':
+            return f"NewsAPI Error: {market_news.get('message', 'Unknown error')}"
+            
         if not market_news.get('articles'):
-            return "Market overview currently unavailable."
+            return "No market news articles found. Please check API configuration."
             
         # Filter and format news
         filtered_articles = filter_relevant_news(market_news['articles'])
@@ -133,6 +140,9 @@ def get_market_overview():
             for article in filtered_articles[:5]  # Limit to top 5 articles
             if article['description']
         ])
+        
+        if not market_news_text.strip():
+            return "No relevant market news found after filtering."
         
         # Generate market overview using Groq
         if not GROQ_AVAILABLE:
@@ -153,6 +163,7 @@ def get_market_overview():
         return chat_completion.choices[0].message.content
         
     except Exception as e:
+        st.error(f"Market Overview Error: {str(e)}")  # More visible error
         return f"Error generating market overview: {str(e)}"
 
 # Page config
