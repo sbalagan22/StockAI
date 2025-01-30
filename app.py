@@ -116,8 +116,12 @@ def get_groq_analysis(ticker, news_text):
 # Update the market overview function
 def get_market_overview():
     try:
-        # Get broad market news
-        market_news = get_stock_news("SPY")  # Using SPY as proxy for market news
+        # Get broad market news with a more market-focused query
+        market_query = "(stock market OR S&P 500 OR market indices OR Wall Street) AND (trading OR investors OR sentiment OR economy)"
+        url = f"https://newsapi.org/v2/everything?q={market_query}&apiKey={NEWS_API_KEY}&sortBy=publishedAt&language=en&pageSize=10"
+        
+        response = requests.get(url)
+        market_news = response.json()
         
         if not market_news.get('articles'):
             return "Market overview currently unavailable."
@@ -125,8 +129,8 @@ def get_market_overview():
         # Filter and format news
         filtered_articles = filter_relevant_news(market_news['articles'])
         market_news_text = "\n\n".join([
-            f"• {article['description']}"
-            for article in filtered_articles
+            f"• {article['title']}: {article['description']}"
+            for article in filtered_articles[:5]  # Limit to top 5 articles
             if article['description']
         ])
         
