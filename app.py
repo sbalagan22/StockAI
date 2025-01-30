@@ -116,8 +116,8 @@ def get_groq_analysis(ticker, news_text):
 # Update the market overview function
 def get_market_overview():
     try:
-        # Get broad market news with a more market-focused query
-        market_query = "(stock market OR S&P 500 OR market indices OR Wall Street) AND (trading OR investors OR sentiment OR economy)"
+        # Simplified query without special characters
+        market_query = "stock market news financial markets wall street trading"
         url = f"https://newsapi.org/v2/everything?q={market_query}&apiKey={NEWS_API_KEY}&sortBy=publishedAt&language=en&pageSize=10"
         
         response = requests.get(url)
